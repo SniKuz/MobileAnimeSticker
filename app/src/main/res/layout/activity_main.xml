@@ -8,19 +8,24 @@
     tools:context=".activity.MainActivity">
 
     <Button
+        android:id="@+id/bt_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bt_start"
-        android:text="bt_start"
-        />
+        android:text="Sticker_Start" />
 
     <Button
+        android:id="@+id/bt_stop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/bt_stop"
         android:layout_below="@+id/bt_start"
-        android:text="bt_stop"
-        />
+        android:text="Sticker_Stop" />
+
+    <Button
+        android:id="@+id/bt_makesticker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/bt_stop"
+        android:text="Make Sticker" />
 
 
 </RelativeLayout>

@@ -8,14 +8,17 @@ import android.os.IBinder
 import com.example.mobileanimesticker.R
 import android.graphics.PixelFormat
 import android.graphics.drawable.AnimationDrawable
+import android.media.Image
 import android.os.Handler
 import android.util.Log
 import android.view.*
 import com.example.mobileanimesticker.activity.StickerActivity
 import android.view.View.OnTouchListener
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 
-class StickerActivity : Service() {
+class StickerActivity : Service(){
     var mp: MediaPlayer? = null
     var windowManager: WindowManager? = null
     var mView: View? = null
@@ -29,6 +32,7 @@ class StickerActivity : Service() {
     override fun onCreate() {
         super.onCreate()
         val inflate = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+
 
         //<BGM>
         mp = MediaPlayer.create(this, R.raw.test_bgm)
@@ -46,6 +50,10 @@ class StickerActivity : Service() {
         )
         params!!.gravity = Gravity.LEFT or Gravity.TOP
         mView = inflate.inflate(R.layout.activity_sticker, null)
+
+        //GIF ON code. under lucyAnimation is sprite anime
+        Glide.with(this).load(R.raw.test).into(mView!!.findViewById(R.id.imageView))
+
         //        final TextView textView = (TextView) mView.findViewById(R.id.textView); //필요 없어서 삭제
         val button = mView!!.findViewById<View>(R.id.imageView) as ImageView
         //        button.setOnTouchListener(multiTouchListner);
@@ -53,8 +61,8 @@ class StickerActivity : Service() {
 
         //animation put in(now lucy)
         button.setImageResource(R.drawable.lucy_animation)
-        val lucyAnimation = button.drawable as AnimationDrawable
-        lucyAnimation.start()
+//        val lucyAnimation = button.drawable as AnimationDrawable
+//        lucyAnimation.start()
         windowManager!!.addView(mView, params)
     }
 
