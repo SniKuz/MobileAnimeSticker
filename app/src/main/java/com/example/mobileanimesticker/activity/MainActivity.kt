@@ -1,56 +1,53 @@
 package com.example.mobileanimesticker.activity
 
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.example.mobileanimesticker.R
-import android.content.Intent
-import com.example.mobileanimesticker.activity.StickerActivity
-import android.os.Build
-import com.example.mobileanimesticker.activity.MainActivity
 import android.annotation.TargetApi
-import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
+import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.widget.Button
-import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-
+import com.example.mobileanimesticker.R
+import com.example.mobileanimesticker.activity.StickerActivity
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileOutputStream
+import java.io.FileWriter
 
 
 class MainActivity : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        log("start")
 
         //check write, read permission. if not allow, exit
         checkImgPermission()
 
 
-
-
         val bt_start = findViewById<View>(R.id.bt_start) as Button
         bt_start.setOnClickListener {
             checkOverlayPermission()
-            //startService(new Intent(MainActivity.this, AlwaysOnTopService.class));
         }
         val bt_stop = findViewById<View>(R.id.bt_stop) as Button
         bt_stop.setOnClickListener { stopService(Intent(this@MainActivity, StickerActivity::class.java)) }
 
         val bt_makeSticker = findViewById<View>(R.id.bt_makesticker) as Button
         bt_makeSticker.setOnClickListener {
-            var imgIntent = Intent(Intent.ACTION_PICK)
-            imgIntent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            imgIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            imgIntent.action = Intent.ACTION_GET_CONTENT
-
-            startActivityForResult(intent, IMG_GET)
+            pickFromGallery()
         }
     }
 
@@ -62,16 +59,28 @@ class MainActivity : AppCompatActivity() {
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:$packageName")
                 )
-//                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
+                intent.putExtra(REQUESTCODE, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
+                getActiveResult_overlay?.launch(intent)
 
             } else {
-                startService(Intent(this@MainActivity, StickerActivity::class.java))
+                startSticker()
             }
         } else {
+            startSticker()
+        }
+    }
+
+    //for start StickerActivity Scene
+    private fun startSticker(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            startForegroundService(Intent(this, StickerActivity::class.java))
+        }else{
             startService(Intent(this@MainActivity, StickerActivity::class.java))
         }
     }
 
+    //<ImgPermissionGet>
+    //For Img Permission Get in First Time app running
     private fun checkImgPermission() {
         if(ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
             || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
@@ -83,7 +92,6 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, permissions, PERMISSON_ACCESS_ALL)
         }
     }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -99,46 +107,77 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    //</ImgPermissionGet>
 
 
-    @TargetApi(Build.VERSION_CODES.M) // M 버전 이상 API를 타겟
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-            if (!Settings.canDrawOverlays(this)) {
-                // TODO 동의를 얻지 못했을 경우의 처리
+    private var getActiveResult_overlay = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()){
+        result ->
+        if (result.resultCode == RESULT_OK){
+            val data : Intent ?= result.data
+            val requestCode = result.data?.getStringExtra(REQUESTCODE)
+
+            if(!Settings.canDrawOverlays(this)){
+                finish()
             } else {
-                startService(Intent(this@MainActivity, StickerActivity::class.java))
+                startSticker()
             }
+            log("overlay")
         }
-        else if(resultCode == RESULT_OK && resultCode == IMG_GET){
-            var list = ArrayList<Uri>()
-            list.clear()
-            if(data?.clipData != null){
-                val count = data.clipData!!.itemCount
-                for(i in 0 until  count){
-                    val img = data.clipData!!.getItemAt(i).uri
-                    list.add(img)
-                }
-            }
-            else{
-                data?.data?.let {uri ->
-                    val img : Uri? = data?.data
-                    if(img != null){
-                        list.add(img)
-                    }
-                }
-            }
+    }
+
+    private var getActiveResult_Img = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()){
+        result ->
+        if(result.resultCode == RESULT_OK){
+            var uri : Uri? = result?.data?.data
+            var path : String? = getRealPathFromURI(uri!!)
+
+            var outputFile : FileOutputStream = openFileOutput("stickerpath", MODE_PRIVATE)
+            outputFile.write(path?.toByteArray())
+            outputFile.close()
+            log("Write")
+        }
+    }
+
+
+    //About Get Img form gallery
+    private fun pickFromGallery(){
+        var intent = Intent(Intent.ACTION_PICK)
+        intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        intent.type = "image/*"
+        getActiveResult_Img?.launch(intent)
+    }
+
+
+    private fun getRealPathFromURI(uri : Uri) : String {
+        var buildName = Build.MANUFACTURER
+        if (buildName.equals("Xiaomi")) {
+            return uri.path!!
         }
 
+        var columnIndex = 0
+        var proj = arrayOf(MediaStore.Images.Media.DATA)
+        var cursor = contentResolver.query(uri, proj, null, null, null)
+        if (cursor!!.moveToFirst()) {
+            columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+        }
+        return cursor.getString(columnIndex)
     }
+
+    fun log(log : String){
+        Log.d("Log", log)
+    }
+
 
 
 
 
     companion object {
         private const val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 1 // 오버레이 권한 설정창
-        private const val IMG_GET = 2
+        private const val REQ_GALLERY = 2
         private const val PERMISSON_ACCESS_ALL = 100
+        const val REQUESTCODE = "requestCode"
     }
+
 }

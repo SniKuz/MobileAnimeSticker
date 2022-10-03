@@ -1,22 +1,29 @@
 package com.example.mobileanimesticker.activity
 
 
-import android.app.Service
-import android.media.MediaPlayer
+import android.app.*
+import android.content.Context
 import android.content.Intent
-import android.os.IBinder
-import com.example.mobileanimesticker.R
+import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.drawable.AnimationDrawable
-import android.media.Image
+import android.media.MediaPlayer
+import android.os.Build
 import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.*
-import com.example.mobileanimesticker.activity.StickerActivity
 import android.view.View.OnTouchListener
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
+import androidx.core.app.NotificationCompat
 import com.bumptech.glide.Glide
+import com.example.mobileanimesticker.R
+import java.io.BufferedReader
+import java.io.DataInputStream
+import java.io.File
+import java.io.FileReader
+
 
 class StickerActivity : Service(){
     var mp: MediaPlayer? = null
@@ -31,13 +38,33 @@ class StickerActivity : Service(){
 
     override fun onCreate() {
         super.onCreate()
+        var valueUTF : String?
+
+        val file = File(filesDir.toString() + "/stickerpath")
+        if(!file.exists()){
+            Toast.makeText(this, "스티커를 세팅해주세요", Toast.LENGTH_LONG).show()
+            Thread.sleep(2000)
+            valueUTF = null
+            onDestroy()
+        } else {
+            val reader = FileReader(file)
+            val buffer = BufferedReader(reader)
+            valueUTF = buffer.readLine()
+            buffer.close()
+        }
+
+        //<ForeGround Service> upper Andorid O ver
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            createNotificationChannel()
+            val notification = NotificationCompat.Builder(this, TAG)
+                .setContentTitle("Anime Sticker")
+                .setContentText("Anime Sticker is running")
+                .build()
+            startForeground(NOTI_ID, notification)
+        }
+
         val inflate = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-
-        //<BGM>
-        mp = MediaPlayer.create(this, R.raw.test_bgm)
-        mp!!.setLooping(true)
-        //</BGM>
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         params = WindowManager.LayoutParams( /*ViewGroup.LayoutParams.MATCH_PARENT*/
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -52,28 +79,28 @@ class StickerActivity : Service(){
         mView = inflate.inflate(R.layout.activity_sticker, null)
 
         //GIF ON code. under lucyAnimation is sprite anime
-        Glide.with(this).load(R.raw.test).into(mView!!.findViewById(R.id.imageView))
+        Glide.with(this)
+            .load(valueUTF)
+            .error(R.drawable.logo)
+            .into(mView!!.findViewById(R.id.imageView))
 
-        //        final TextView textView = (TextView) mView.findViewById(R.id.textView); //필요 없어서 삭제
         val button = mView!!.findViewById<View>(R.id.imageView) as ImageView
-        //        button.setOnTouchListener(multiTouchListner);
         button.setOnTouchListener(mViewTouchListener)
-
-        //animation put in(now lucy)
-        button.setImageResource(R.drawable.lucy_animation)
-//        val lucyAnimation = button.drawable as AnimationDrawable
-//        lucyAnimation.start()
         windowManager!!.addView(mView, params)
     }
 
+
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         // 서비스가 호출될 때마다 실행
-        mp!!.start() // 노래 시작
         return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            stopForeground(true)
+        }
+
         if (windowManager != null) {
             if (mView != null) {
                 windowManager!!.removeView(mView)
@@ -81,13 +108,13 @@ class StickerActivity : Service(){
             }
             windowManager = null
         }
-        mp!!.stop()
     }
+
 
     //TouchListner 관련 코드
     //중요!!
     var myService = this
-    val _handler = Handler()
+    val _handler = Handler(Looper.getMainLooper())
     var _longPressed = Runnable {
 //        Log.i("info", "it work")
         myService.stopSelf()
@@ -118,7 +145,32 @@ class StickerActivity : Service(){
         true
     }
 
+    private fun createNotificationChannel(){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            val notificationChannel = NotificationChannel(
+                TAG,
+                "Anime Sticker",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = "Sticker Anime Tests"
+
+            val notificationManager = applicationContext.getSystemService(
+                Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(
+                notificationChannel
+            )
+        }
+    }
+
+
+
+
     companion object {
         var LONG_PRESS_TIME = 4000 //miliseconds
+        private const val NOTI_ID = 3
+        private const val TAG = "[Sticker Service]"
     }
 }
