@@ -4,6 +4,7 @@
 
     <!--    OverLay Permission-->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <!--    Image Read,Write Permission-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -35,6 +36,16 @@
             android:enabled="true"
             android:permission="android.permission.SYSTEM_ALERT_WINDOW">
         </service>
+
+<!--        <provider-->
+<!--            android:authorities="com.blacklog.takepicture.fileprovider"-->
+<!--            android:name="androidx.core.content.FileProvider"-->
+<!--            android:grantUriPermissions="true"-->
+<!--            android:exported="false">-->
+<!--            <meta-data-->
+<!--                android:name="android.support.FILE_PROVIDER_PATHS" />-->
+
+<!--        </provider>-->
 
     </application>
 
