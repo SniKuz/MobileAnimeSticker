@@ -34,7 +34,8 @@
         <service
             android:name=".activity.StickerActivity"
             android:enabled="true"
-            android:permission="android.permission.SYSTEM_ALERT_WINDOW">
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW"
+            android:stopWithTask="false">
         </service>
 
 <!--        <provider-->
