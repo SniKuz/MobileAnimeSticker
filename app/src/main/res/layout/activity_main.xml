@@ -11,7 +11,8 @@
         android:id="@+id/bt_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sticker_Start" />
+        android:text="Sticker_Start"
+        />
 
     <Button
         android:id="@+id/bt_stop"

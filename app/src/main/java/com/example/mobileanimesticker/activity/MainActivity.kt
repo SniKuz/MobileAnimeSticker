@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             var outputFile : FileOutputStream = openFileOutput("stickerpath", MODE_PRIVATE)
             outputFile.write(path?.toByteArray())
             outputFile.close()
-            log("Write")
+            showText("스티커가 변경되었습니다.", 2000)
         }
     }
 
@@ -167,6 +168,9 @@ class MainActivity : AppCompatActivity() {
 
     fun log(log : String){
         Log.d("Log", log)
+    }
+    fun showText(text : String, time : Int){
+        Toast.makeText(this@MainActivity, text, time).show()
     }
 
 

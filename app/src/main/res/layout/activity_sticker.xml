@@ -8,11 +8,10 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/imageView"
-        android:src="@drawable/logo"
-        android:scaleType="centerInside"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:filterTouchesWhenObscured="true"
-        />
+        android:scaleType="centerInside"
+        android:src="@drawable/logo" />
 </RelativeLayout>
