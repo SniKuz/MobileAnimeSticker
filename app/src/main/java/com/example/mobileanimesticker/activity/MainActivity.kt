@@ -73,10 +73,15 @@ class MainActivity : AppCompatActivity() {
 
     //for start StickerActivity Scene
     private fun startSticker(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            startForegroundService(Intent(this, StickerActivity::class.java))
-        }else{
-            startService(Intent(this@MainActivity, StickerActivity::class.java))
+        val file = File(filesDir.toString() + "/stickerpath")
+        if(!file.exists()){
+            Toast.makeText(this, "스티커를 세팅해주세요", Toast.LENGTH_LONG).show()
+        } else{
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                startForegroundService(Intent(this, StickerActivity::class.java))
+            }else{
+                startService(Intent(this@MainActivity, StickerActivity::class.java))
+            }
         }
     }
 
