@@ -4,6 +4,7 @@ package com.example.mobileanimesticker.activity
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.media.MediaPlayer
@@ -18,11 +19,15 @@ import android.widget.ImageView
 import android.widget.RemoteViews
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.os.postDelayed
 import com.bumptech.glide.Glide
 import com.example.mobileanimesticker.R
+import kotlinx.coroutines.Delay
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
+import java.lang.Integer.max
+import java.lang.Integer.min
 
 
 class StickerActivity : Service() {
@@ -34,22 +39,29 @@ class StickerActivity : Service() {
         return null
     }
 
+    var stickerWidth : Int? = null
+    var stickerHeight : Int? = null
+    var imgRatio : Int? = null
+    var isHeightBigger : Boolean? = null
+
     override fun onCreate() {
         super.onCreate()
         var valueUTF : String?
 
         val file = File(filesDir.toString() + "/stickerpath")
-        if(!file.exists()){
-            Toast.makeText(this, "스티커를 세팅해주세요", Toast.LENGTH_LONG).show()
-            Thread.sleep(2000)
-            valueUTF = null
-            onDestroy()
-        } else {
-            val reader = FileReader(file)
-            val buffer = BufferedReader(reader)
-            valueUTF = buffer.readLine()
-            buffer.close()
-        }
+        val reader = FileReader(file)
+        val buffer = BufferedReader(reader)
+        valueUTF = buffer.readLine()
+        buffer.close()
+
+        var option : BitmapFactory.Options = getBitMapSize(valueUTF)
+        stickerHeight = option.outHeight
+        stickerWidth = option.outWidth
+        isHeightBigger = if(option.outHeight > option.outWidth) true else false
+        imgRatio = max(stickerHeight!!, stickerWidth!!) / min(stickerHeight!!, stickerWidth!!)
+        log(stickerHeight.toString())
+        log(stickerWidth.toString())
+        log(imgRatio.toString())
 
         //<ForeGround Service> upper Andorid O ver
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
@@ -67,6 +79,7 @@ class StickerActivity : Service() {
                 R.layout.foreground_notification
             )
             val notification = NotificationCompat.Builder(this, TAG)
+                .setSound(null)
                 .setSmallIcon(android.R.color.transparent)
                 .setContentTitle("Anime Sticker")
                 .setContent(remoteViews) //setting xml in notification
@@ -92,6 +105,9 @@ class StickerActivity : Service() {
         params!!.gravity = Gravity.LEFT or Gravity.TOP
         mView = inflate.inflate(R.layout.activity_sticker, null)
 
+
+        mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height = if(isHeightBigger!!) 400 * imgRatio!! else 400
+        mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width = if(isHeightBigger!!) 400  else 400 * imgRatio!!
         //GIF ON code. under lucyAnimation is sprite anime
         Glide.with(this)
             .load(valueUTF)
@@ -134,34 +150,26 @@ class StickerActivity : Service() {
 
     //TouchListner 관련 코드
     //중요!!
-    var myService = this
     val _handler = Handler(Looper.getMainLooper())
-    var _longPressed = Runnable {
-//        Log.i("info", "it work")
-        myService.stopSelf()
-    }
+
     private var mTouchX = 0f
     private var mTouchY = 0f
-    private var multiTouchDistanceStart = 400f
+    private var multiTouchDistanceStart = 600f
     private var multiTouchDistanceEnd = 0f
     private var mViewX = 0
     private var mViewY = 0
     private val mViewTouchListener = OnTouchListener { v, event ->
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                mTouchX = event.rawX
-                mTouchY = event.rawY
-                mViewX = params!!.x
-                mViewY = params!!.y
-//                _handler.postDelayed(_longPressed, LONG_PRESS_TIME.toLong())
-            }
-            MotionEvent.ACTION_POINTER_DOWN -> {
-                msg("다중선택 감지됨")
-                if(event.pointerCount == 2){
-                    msg("2개인것도 알고있음")
+                if(event.pointerCount ==1){
+                    mTouchX = event.rawX
+                    mTouchY = event.rawY
+                    mViewX = params!!.x
+                    mViewY = params!!.y
+                } else if(event.pointerCount == 2 ){
                     multiTouchDistanceStart = getDistance(event)
-                    log("2개 선택완료)")
                 }
+
             }
             MotionEvent.ACTION_MOVE -> {
                 if(event.pointerCount == 1){
@@ -170,27 +178,54 @@ class StickerActivity : Service() {
                     params!!.x = mViewX + x
                     params!!.y = mViewY + y
                     windowManager!!.updateViewLayout(mView, params)
-//                    _handler.postDelayed(_longPressed, LONG_PRESS_TIME.toLong())
                 } else if(event.pointerCount == 2){
                     multiTouchDistanceEnd = getDistance(event)
                     if(multiTouchDistanceEnd > multiTouchDistanceStart){
-                        mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height +=
-                            if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height <= 500) 50 else 0
-                        mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width +=
-                            if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width <= 500) 50 else 0
+                        if(isHeightBigger!!){
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height <= 1000 )
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height <= 1000)
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                        }
+                        else{
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width <= 1000 )
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width <= 1000)
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                        }
+
                     } else if(multiTouchDistanceEnd < multiTouchDistanceStart){
-                        mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height -=
-                            if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height >= 150) 10 else 0
-                        mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width -=
-                            if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width >= 150) 10 else 0
+                        if(isHeightBigger!!){
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height >= 250 )
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height >= 250)
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                        }
+                        else{
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width >= 250 )
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                            mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
+                                if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width >= 250)
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                        }
                     }
-                    mView?.layoutParams = params
+                }
+                    windowManager!!.updateViewLayout(mView, params)
+//                    mView?.layoutParams = params
                 }//횟수가아니라 거리에따라서 크기조정으로바꾸고
                 // 연속적으로 보여주는거는 위에거 보내서 주고 > 살짝 부자연스럽게 됨 뚝 뚝 끊김
                 //너무 살짝만 움직여도 확확작아짐 그냥 차이만 나면 바로 해버리니까.
-
+            MotionEvent.ACTION_POINTER_UP -> {
+                Handler(Looper.getMainLooper()).postDelayed({
+                }, 500)
             }
-            MotionEvent.ACTION_UP -> _handler.removeCallbacks(_longPressed)
         }
         true
     }
@@ -222,6 +257,13 @@ class StickerActivity : Service() {
         }
     }
 
+    fun getBitMapSize(imgPath : String) : BitmapFactory.Options{
+        var options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(imgPath, options)
+        return options
+    }
+
     fun log(msg : String){
         Log.d("테스트", msg)
     }
@@ -232,7 +274,6 @@ class StickerActivity : Service() {
 
 
     companion object {
-        var LONG_PRESS_TIME = 4000 //miliseconds
         private const val NOTI_ID = 3
         private const val TAG = "[Sticker Service]"
         const val PENDING_CODE = 4
