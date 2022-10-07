@@ -13,15 +13,16 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MobileAnimeSticker"
         tools:targetApi="32"
         android:requestLegacyExternalStorage="true"
         >
 
+        <activity android:name=".activity.PermissionActivity"/>
         <activity android:name=".activity.MainActivity"/>
         <activity android:name=".activity.IntroActivity"
             android:exported="true">
