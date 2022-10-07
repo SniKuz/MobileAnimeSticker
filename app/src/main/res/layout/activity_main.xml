@@ -7,10 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+
     <Button
         android:id="@+id/bt_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         android:text="Sticker_Start"
         />
 
@@ -19,12 +22,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/bt_start"
+        android:clickable="true"
+        android:focusable="true"
         android:text="Sticker_Stop" />
 
     <Button
         android:id="@+id/bt_makesticker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_below="@+id/bt_stop"
         android:text="Make Sticker" />
 

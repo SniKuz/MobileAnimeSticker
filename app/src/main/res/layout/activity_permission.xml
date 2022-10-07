@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/permission_title"
+        android:text="App access required"
+        android:textSize="32dp"
+        android:typeface="sans"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:paddingTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/permission_text"
+        android:layout_below="@+id/permission_title"
+        android:textSize="20dp"
+        android:typeface="sans"
+        android:textColor="@android:color/darker_gray"
+        android:text="The following functions are required to display stickers on the screen.\nPlease Press the two buttons below and press Next."
+        />
+
+
+    <ImageView
+        android:layout_marginTop="30dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/permission_File_Icon"
+        android:layout_below="@id/permission_text"
+        android:src="@drawable/icon_file" />
+    <TextView
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:id="@+id/permission_File_Text"
+        android:layout_toRightOf="@+id/permission_File_Icon"
+        android:layout_below="@id/permission_text"
+        android:text="Gallery Access: Required to select stickers from the gallery."
+        android:gravity="left|center"
+        android:textSize="18dp"
+        />
+    <Button
+        android:id="@+id/btn_gallery_permission"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@id/permission_text"
+        android:background="#30ff0000"
+        android:clickable="true"
+        android:focusable="true"
+        />
+
+    <ImageView
+        android:layout_marginTop="30dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/permission_overlay_Icon"
+        android:layout_below="@+id/permission_File_Icon"
+        android:src="@drawable/icon_overlay" />
+    <TextView
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:id="@+id/permission_overlay_Text"
+        android:layout_toRightOf="@+id/permission_overlay_Icon"
+        android:layout_below="@+id/permission_File_Icon"
+        android:text="Overlay Authorization : need permission to draw stickers."
+        android:gravity="left|center"
+        android:textSize="18dp"
+        />
+    <Button
+        android:id="@+id/btn_overlay_permission"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_below="@+id/permission_File_Icon"
+        android:background="#30ff3399"
+        android:clickable="true"
+        android:focusable="true"
+        />
+
+
+
+    <Button
+        android:id="@+id/btn_permission_allow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Next"
+        android:typeface="sans"
+        android:textSize="25dp"
+        android:enabled="false"
+        android:clickable="true"
+        android:focusable="true"
+        >
+
+    </Button>
+
+
+</RelativeLayout>
