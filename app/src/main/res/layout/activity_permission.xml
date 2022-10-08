@@ -25,7 +25,7 @@
         android:textSize="20dp"
         android:typeface="sans"
         android:textColor="@android:color/darker_gray"
-        android:text="The following functions are required to display stickers on the screen.\nPlease Press the two buttons below and press Next."
+        android:text="The following functions are required to display stickers on the screen.\nPlease Press the two purple buttons below and press Next."
         />
 
 

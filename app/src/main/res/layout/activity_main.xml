@@ -7,14 +7,57 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/howToUse"
+        android:text="How to use"
+        android:textSize="32dp"
+        android:typeface="sans"
+        android:textStyle="bold"
+        android:padding="10dp"
+        />
+
+    <ImageButton
+        android:id="@+id/before_Btn"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:layout_below="@+id/howToUse"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/img_howtouse"
+        android:src="@drawable/left"
+        android:background="@null"
+        />
+
+    <ImageView
+        android:id="@+id/img_howtouse"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_below="@+id/howToUse"
+        android:layout_centerInParent="true"
+        android:src="@drawable/tutorial_1"
+        />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:id="@+id/after_Btn"
+        android:layout_below="@+id/howToUse"
+        android:layout_toRightOf="@+id/img_howtouse"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/right"
+        android:background="@null"
+        />
+
 
     <Button
         android:id="@+id/bt_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/img_howtouse"
+        android:layout_marginTop="20dp"
         android:clickable="true"
         android:focusable="true"
-        android:text="Sticker_Start"
+        android:text="Start Sticker"
         />
 
     <Button
@@ -24,7 +67,7 @@
         android:layout_below="@+id/bt_start"
         android:clickable="true"
         android:focusable="true"
-        android:text="Sticker_Stop" />
+        android:text="Stop sticker" />
 
     <Button
         android:id="@+id/bt_makesticker"
@@ -33,7 +76,18 @@
         android:clickable="true"
         android:focusable="true"
         android:layout_below="@+id/bt_stop"
-        android:text="Make Sticker" />
+        android:text="Choose Sticker" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:text="Made by SniKuz in OverTale Club activities : A useless study activities. 22.9.28 ~ 22.10.08"
+        android:typeface="sans"
+        android:textStyle="bold"
+        android:gravity="center"
+        />
 
 
 </RelativeLayout>

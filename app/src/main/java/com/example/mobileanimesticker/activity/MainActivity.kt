@@ -4,6 +4,7 @@ package com.example.mobileanimesticker.activity
 import android.annotation.TargetApi
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.TypedArray
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -33,6 +35,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var howtoUseImg = findViewById<ImageView>(R.id.img_howtouse)
+        val imgArray : TypedArray = resources.obtainTypedArray(R.array.tutorial)
+        var tutorial_pos = 0
+        val btn_left_howtoUse = findViewById<ImageButton>(R.id.before_Btn)
+        btn_left_howtoUse.setOnClickListener {
+            if(tutorial_pos==0){
+
+            }else{
+                tutorial_pos -= 1
+                howtoUseImg.setImageDrawable(imgArray.getDrawable(tutorial_pos))
+            }
+        }
+        val btn_right_howtoUse = findViewById<ImageButton>(R.id.after_Btn)
+        btn_right_howtoUse.setOnClickListener {
+            if(tutorial_pos==4){
+
+            }else{
+                tutorial_pos += 1
+                howtoUseImg.setImageDrawable(imgArray.getDrawable(tutorial_pos))
+            }
+        }
+
 
 
         val bt_start = findViewById<View>(R.id.bt_start) as Button
@@ -52,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     private fun startSticker(){
         val file = File(filesDir.toString() + "/stickerpath")
         if(!file.exists()){
-            Toast.makeText(this, "스티커를 세팅해주세요", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Please choose sticker", Toast.LENGTH_LONG).show()
         } else{
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                 startForegroundService(Intent(this, StickerActivity::class.java))
@@ -75,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             outputFile.write(path?.toByteArray())
             outputFile.close()
 
-            showText("스티커가 변경되었습니다.", 2000)
+            showText("Sticker has been changed", 2000)
         }
     }
 
