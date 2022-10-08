@@ -184,36 +184,36 @@ class StickerActivity : Service() {
                         if(isHeightBigger!!){
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height <= 1000 )
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 1.01f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height <= 1000)
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 1.01f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
                         }
                         else{
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width <= 1000 )
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 1.01f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width <= 1000)
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 1.1f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 1.01f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
                         }
 
                     } else if(multiTouchDistanceEnd < multiTouchDistanceStart){
                         if(isHeightBigger!!){
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height >= 250 )
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 0.99f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height >= 250)
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 0.99f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
                         }
                         else{
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width >= 250 )
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height * 0.99f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.height
                             mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width =
                                 if(mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width >= 250)
-                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 0.9f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
+                                    (mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width * 0.99f).toInt() else mView?.findViewById<View>(R.id.imageView)?.layoutParams!!.width
                         }
                     }
                 }

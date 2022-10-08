@@ -94,6 +94,8 @@ class PermissionActivity : AppCompatActivity() {
                     Uri.parse("package:$packageName")
                 )
                 getActiveResult_overlay?.launch(intent)
+            } else{
+                goNext()
             }
         }
     }
@@ -109,6 +111,7 @@ class PermissionActivity : AppCompatActivity() {
                 goNext()
             }
         }
+        goNext()
     }
 
     private fun goNext(){
