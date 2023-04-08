@@ -4,4 +4,4 @@ Anime Sticker for android system.
 Simple Anime Sticker app
 Play png, gif or other thing in andorid always on top
 https://tv.kakao.com/v/432590157
-<img width="80%" src="https://tv.kakao.com/v/432590157"/>
+
